@@ -28,6 +28,14 @@ async function setupSocket(mode) {
       sendBtn.classList.toggle('opacity-50', !enabled);
     }
 
+    // Allow pressing Enter to send message
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !input.disabled) {
+        e.preventDefault();
+        sendMsg();
+      }
+    });
+
     if (mode === 'general') {
       try {
         const res = await fetch('/chat/general/messages');
@@ -171,7 +179,6 @@ async function setupSocket(mode) {
           if (!socket) return;
 
           if (socket.connected && skipBtn.textContent === 'Skip') {
-            // Skip behavior
             socket.emit('skip');
             messages.innerHTML += `
               <div class="chat chat-start">
@@ -184,7 +191,6 @@ async function setupSocket(mode) {
             setInputEnabled(false);
             skipBtn.textContent = 'Start';
           } else {
-            // Start behavior
             messages.innerHTML = '';
             setupSocket('random');
           }
