@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ChatMe</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="min-h-screen w-full bg-black text-gray-200 relative">
+  <div class="min-h-screen w-full grid md:grid-cols-2">
+
+    <!-- Left Section -->
+    <div class="flex flex-col bg-[#1a1a1a] justify-center items-center px-10 space-y-10 text-center">
+      <!-- Header & Sub-header -->
+      <div>
+        <h1 class="text-5xl font-bold tracking-wide mb-2">ChatMe 💬</h1>
+        <p class="text-md italic font-light text-gray-400">Chat easy. Stay close. Anytime. Anywhere.</p>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex flex-col items-center space-y-4 w-full max-w-md">
+        <button class="btn bg-violet-600 hover:bg-violet-700 text-white shadow-none border-none w-full" onclick="register_modal.showModal()">🆕 Register User</button>
+        <button class="btn text-black shadow-none border-none w-full" onclick="login_modal.showModal()">🔑 Login User</button>
+      </div>
+    </div>
+
+    <!-- Right: Background Image -->
+    <div class="hidden md:block bg-[url('/images/background.png')] bg-cover bg-center"></div>
+  </div>
+
+  <!-- Modals stay unchanged -->
+  <!-- Register Modal -->
+  <dialog id="register_modal" class="modal">
+    <div class="modal-box bg-[#1e1e1e] text-white text-center">
+      <h2 class="font-bold text-lg mb-4">Choose 3 emoji</h2>
+      <div id="emoji-pick" class="text-3xl flex flex-wrap justify-center gap-2 mb-4"></div>
+      <button id="register-btn" class="btn bg-violet-600 shadow-none border-none w-full disabled:opacity-50" disabled>Register</button>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <!-- Login Modal -->
+  <dialog id="login_modal" class="modal">
+    <div class="modal-box bg-[#1e1e1e] text-white text-center">
+      <h2 class="font-bold text-lg mb-4">Emoji Combo</h2>
+      <div class="flex gap-3 items-center mb-2">
+        <input id="emoji-input" type="text" placeholder="e.g. 😀🎉🚀"
+               class="input border-none bg-gray-800 text-white w-full text-center text-xl" maxlength="10" />
+        <button id="login-btn" class="btn bg-violet-600 border-none shadow-none" disabled>Login</button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <script src="/auth.js"></script>
+</body>
+</html>
