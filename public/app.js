@@ -9,7 +9,7 @@ async function setupSocket(mode) {
     const avatar = sessionStorage.getItem('avatar');
     if (!sessionId || !avatar) {
       alert('Missing session info. Please log in again.');
-      return window.location.href = '/';
+      return (window.location.href = '/');
     }
 
     const messages = document.getElementById('messages');
@@ -18,20 +18,16 @@ async function setupSocket(mode) {
     const sendBtn = document.querySelector('button[onclick="sendMsg()"]');
 
     function scrollToBottom() {
-      if (messages) {
-        messages.scrollTop = messages.scrollHeight;
-      }
+      if (messages) messages.scrollTop = messages.scrollHeight;
     }
 
     function setInputEnabled(enabled) {
       input.disabled = !enabled;
       sendBtn.disabled = !enabled;
-
       input.classList.toggle('opacity-50', !enabled);
       sendBtn.classList.toggle('opacity-50', !enabled);
     }
 
-    // Load history for general chat only
     if (mode === 'general') {
       try {
         const res = await fetch('/chat/general/messages');
@@ -120,30 +116,39 @@ async function setupSocket(mode) {
       socket.on('waiting_for_partner', () => {
         messages.innerHTML += `
           <div class="chat chat-start">
-            <div class="chat-bubble chat-bubble-accent italic text-sm">Waiting for a partner...</div>
+            <div class="chat-bubble chat-bubble-accent italic text-sm">
+              Waiting for a partner...
+            </div>
           </div>
         `;
         scrollToBottom();
+        if (skipBtn) skipBtn.textContent = 'Start';
+        setInputEnabled(false);
       });
 
       socket.on('partner_found', () => {
         messages.innerHTML += `
           <div class="chat chat-start">
-            <div class="chat-bubble chat-bubble-success italic text-sm">Partner found! Say hi.</div>
+            <div class="chat-bubble chat-bubble-success italic text-sm">
+              Partner found! Say hi.
+            </div>
           </div>
         `;
         scrollToBottom();
-        setInputEnabled(true);
         if (skipBtn) skipBtn.textContent = 'Skip';
+        setInputEnabled(true);
       });
 
       socket.on('partner_disconnected', () => {
         messages.innerHTML += `
           <div class="chat chat-start">
-            <div class="chat-bubble chat-bubble-error italic text-sm">Partner disconnected. Waiting again...</div>
+            <div class="chat-bubble chat-bubble-error italic text-sm">
+              Partner disconnected. Waiting again...
+            </div>
           </div>
         `;
         scrollToBottom();
+        if (skipBtn) skipBtn.textContent = 'Start';
         setInputEnabled(false);
       });
 
@@ -159,6 +164,32 @@ async function setupSocket(mode) {
         setInputEnabled(false);
         if (skipBtn) skipBtn.textContent = 'Start';
       });
+
+      // Button: Skip or Start
+      if (skipBtn) {
+        skipBtn.onclick = () => {
+          if (!socket) return;
+
+          if (socket.connected && skipBtn.textContent === 'Skip') {
+            // Skip behavior
+            socket.emit('skip');
+            messages.innerHTML += `
+              <div class="chat chat-start">
+                <div class="chat-bubble chat-bubble-info italic text-sm">
+                  You skipped your partner. Press start to find a new match.
+                </div>
+              </div>
+            `;
+            scrollToBottom();
+            setInputEnabled(false);
+            skipBtn.textContent = 'Start';
+          } else {
+            // Start behavior
+            messages.innerHTML = '';
+            setupSocket('random');
+          }
+        };
+      }
     }
   } catch (err) {
     console.error('Setup socket failed:', err.message);
@@ -188,7 +219,9 @@ function toggleConnection() {
 
     messages.innerHTML += `
       <div class="chat chat-start">
-        <div class="chat-bubble chat-bubble-warning italic text-sm">Disconnected. Press start to find a new match.</div>
+        <div class="chat-bubble chat-bubble-warning italic text-sm">
+          Disconnected. Press start to find a new match.
+        </div>
       </div>
     `;
 
